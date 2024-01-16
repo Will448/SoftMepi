@@ -1,9 +1,8 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import dashboardSup from '../view/sup/dashboardSup.js';
-import dashboardLider from '../view/lider/dashboardLider.js';
-import dashboardOper from '../view/oper/dashboardOper.js';
-
+import WelcomePrincipal from '../view/WelcomePrincipal';
+import LoginPrincipal from '../view/LoginPrincipal';
+import DashboardSup from '../view/sup/DashboardSup';
 const Stack = createNativeStackNavigator();
 
 export default function Routes(){
@@ -11,20 +10,20 @@ export default function Routes(){
     return(
         <Stack.Navigator>
             <Stack.Screen
-                name="dashboardSup"
-                component={dashboardSup}
+                name='WelcomePrincipal'
+                component={WelcomePrincipal}
                 options={{headerShown: false}}
             />
 
             <Stack.Screen
-                name="dashboardLider"
-                component={dashboardLider}
+                name='LoginPrincipal'
+                component={LoginPrincipal}
                 options={{headerShown: false}}
             />
-                        
+
             <Stack.Screen
-                name="dashboardOper"
-                component={dashboardOper}
+                name='DashboardSup'
+                component={DashboardSup}
                 options={{headerShown: false}}
             />
         </Stack.Navigator>

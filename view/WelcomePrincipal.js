@@ -1,14 +1,20 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function Home(){
+import {useNavigation} from '@react-navigation/native';
+
+export default function WelcomePrincipal(){
+    const navigation = useNavigation();
 
     return(
-        <View>
-            <Text>MEPI</Text>
-            <Text>Monitoramento de EPI</Text>
-            <TouchableOpacity>
-                <Text>Acessar</Text>
+        <View style={styles.container}>
+            <Text style={styles.title}>MEPI</Text>
+            <Text style={styles.subtitle}>Monitoramento de EPI</Text>
+            <TouchableOpacity 
+                style={styles.button}
+                onPress={() => navigation.navigate('LoginPrincipal')}
+            >
+                <Text style={styles.buttonText}>Acessar</Text>
             </TouchableOpacity>
         </View>
     );
@@ -35,8 +41,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#4A5B48',
         paddingVertical: 12,
         paddingHorizontal: 24,
-        borderRadius: 12,
-        borderColor: '#D8AE5E'
+        borderRadius: 40,
+        borderColor: '#D8AE5E',
+        borderWidth:2
     },
     buttonText: {
         fontSize: 18,
