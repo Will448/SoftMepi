@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 import {useNavigation} from '@react-navigation/native';
 
@@ -8,8 +8,11 @@ export default function WelcomePrincipal(){
 
     return(
         <View style={styles.container}>
+            <Image source={require('../assets/capacete.png')} style={styles.logo}/>
             <Text style={styles.title}>MEPI</Text>
-            <Text style={styles.subtitle}>Monitoramento de EPI</Text>
+            <Text style={styles.subtitle}>M O N I T O R A M E N T O
+            {'\n'}  
+            D E   E P I</Text>
             <TouchableOpacity 
                 style={styles.button}
                 onPress={() => navigation.navigate('LoginPrincipal')}
@@ -25,28 +28,35 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#4A5B48',
         alignItems: 'center',
-        justifyContent: 'center'
     },
     title: {
         fontSize: 48,
         color: '#D8AE5E',
-        marginBottom: 16
+        fontFamily: 'Brice-RegularSemiExpanded',
+        marginTop:'-19%'
     },
     subtitle: {
         fontSize: 24,
         color: '#D8AE5E',
-        marginBottom: 32,
+        fontFamily: 'Corporate-S-SC-Regular',
+        textAlign:'center',
     },
     button: {
         backgroundColor: '#4A5B48',
-        paddingVertical: 12,
-        paddingHorizontal: 24,
+        paddingVertical: 15,
+        paddingHorizontal: 48,
         borderRadius: 40,
         borderColor: '#D8AE5E',
-        borderWidth:2
+        borderWidth:2,
+        marginTop:'45%'
     },
     buttonText: {
-        fontSize: 18,
+        fontSize: 20,
         color: '#D8AE5E'
+    },
+    logo:{
+        width:300,
+        height:300,
+        resizeMode: 'contain'
     }
 })

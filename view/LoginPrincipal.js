@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from "react-native";
-import Icon from 'react-native-vector-icons/Ionicons ';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
+import { Feather } from '@expo/vector-icons';
+
 import { useNavigation } from '@react-navigation/native';
 import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -27,114 +28,105 @@ export default function LoginPrincipal(){
         resolver: yupResolver(schema)
     })
 
-async function loginFirebase(schema) {
-    try{
-        const userCred = await signInWithEmailAndPassword(auth, schema.email, schema.password);
-        const currentUser = userCred.user;
-        if (currentUser) {
-            const currentUserUid = currentUser.uid;
-            const userRef = doc(db, "users", currentUserUid);
-            const userSnap = await getDoc(userRef);
-
-            if (userSnap.exists()) {
-                const userType = userSnap.data().userType;
-                if (userType === "Suporte") {
-                    navigation.navigate('DashboardSup');
-                } else if (userType === "Lider"){
-                    navigation.navigate('DashboardLider');
-                } else if (userType === "Operador"){
-                    navigation.navigate('DashboardOper');
+    async function loginFirebase(schema) {
+        try {
+            await signInWithEmailAndPassword(auth, schema.email, schema.password);
+            console.log('Usuário logado com sucesso!');
+    
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                const currentUserUid = currentUser.uid;
+                const userRef = doc(db, "users", currentUserUid);
+                const userSnap = await getDoc(userRef);
+    
+                if (userSnap.exists()) {
+                    const userType = userSnap.data().userType;
+                    if (userType === "Suporte") {
+                        navigation.navigate('DashboardSup');
+                    } else if (userType === "Lider"){
+                        navigation.navigate('DashboardLider');
+                    } else if (userType === "Operador"){
+                        navigation.navigate('DashboardOper');
+                    } else {
+                        setUserTypeAlertVisible(true);
+                    }   
                 } else {
-                    setUserTypeAlertVisible(true);
-                }   
+                    console.log('Documento do usuário não encontrado no Firestore.');
+                }
             } else {
-                console.log('Documento do usuário não encontrado no Firestore.');
+                console.log('Usuário não está autenticado.');
             }
-        } else {
-            console.log('Usuário não está autenticado.');
+        } catch (error) {
+            setAlertVisible(true);
         }
-    } catch (error){
-        setAlertVisible(true);
     }
-}
+
 
 return (
     <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
 
-            <View style={styles.containerEmail}>
-                <Controller
-                    control={control}
-                    name="email"
-                    render={({field:{onChange, onBlur, value}}) =>(
-                        <TextInput
-                            placeholder="Digite seu email"
-                            placeholderTextColor='#fff'
-                            style={[styles.inputEmail,{
-                                borderWidth: errors.email && 1,
-                                borderColor: errors.email && '#ff375b'
-                            }]}
-                            onChangeText={onChange}
-                            onBlur={onBlur}
-                            value={value}
-                            keyboardType='email-adress'
-                        />
-                    )}
-                />
-                    <Icon style={styles.iconMail} name="mail" color='#fff' size={25} />
-            </View>
-            {errors.email && <Text style={styles.labelError}>{errors.email?.message}</Text>}
+        <Image source={require('../assets/logo.jpg')} style={{width: '40%', height:'40%'}} />
 
-            <View style={styles.containerSenha}>
-                <Controller
-                    control={control}
-                    name="email"
-                    render={({field:{onChange, onBlur, value}}) =>(
-                        <TextInput
-                            placeholder="Digite sua senha"
-                            placeholderTextColor='#fff'
-                            style={[styles.inputSenha,{
-                                borderWidth: errors.password && 1,
-                                borderColor: errors.password && '#ff375b' 
-                            }]}
-                            onChangeText={onChange}
-                            value={value}
-                            onBlur={onBlur}
-                            secureTextEntry={hidepass}
-                        />
-                    )}
-                />
-                    <TouchableOpacity
-                        style={styles.iconEye}
-                        onPress={() => setHidepass(!hidepass)} 
-                    >
-                        <Icon name={eyeIconName} color='#fff' size={25}/>
-                    </TouchableOpacity>
-            </View>
-            {errors.password && <Text style = {styles.labelError}>{errors.password?.message}</Text>}
+        <Text style={styles.Text}>
+            Acesse sua conta para continuar!
+        </Text>
 
-            <TouchableOpacity 
-                style={styles.button}
-                onPress={handleSubmit(loginFirebase)}
-            >
-                <Text style={styles.buttonText}>Entrar</Text>
-            </TouchableOpacity>
+        <View style={[styles.containerEmail,{
+            borderWidth: errors.email && 1,
+            borderColor: errors.email && '#ff375b'
+        }]}>
+            <Controller
+                control={control}
+                name="email"
+                render={({field:{onChange, onBlur, value}}) =>(
+                    <TextInput
+                        placeholder="Digite seu email"
+                        placeholderTextColor='#fff'
+                        style={styles.inputEmail}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                    />
+                )}
+            />
+            <Feather style={styles.iconMail} name="mail" color='#fff' size={25} />
+        </View>
+        {errors.email && <Text style={styles.labelError}>{errors.email?.message}</Text>}
 
-    </ScrollView>
-    
-    <CustomAlert
-        visible={alertVisible}
-        title="Alerta"
-        message="Email ou senha incorretos. Tente novamente."
-        onClose={() => setAlertVisible(false)}
-    />
+        <View style={[styles.containerSenha, {
+                            borderWidth: errors.password && 1,
+                            borderColor: errors.password && '#ff375b',
+                        }]}>
+            <Controller
+                control={control}
+                name="password"
+                render={({field:{onChange, onBlur, value}}) =>(
+                    <TextInput
+                        placeholder="Digite sua senha"
+                        placeholderTextColor='#fff'
+                        style={styles.inputSenha}
+                        onChangeText={onChange}
+                        value={value}
+                        onBlur={onBlur}
+                        secureTextEntry={hidepass}
+                    />
+                )}
+            />
+                <TouchableOpacity
+                    style={styles.iconEye}
+                    onPress={() => setHidepass(!hidepass)} 
+                >
+                    <Feather name={eyeIconName} color='#fff' size={25}/>
+                </TouchableOpacity>
+        </View>
+        {errors.password && <Text style = {styles.labelError}>{errors.password?.message}</Text>}
 
-    <CustomAlert
-        visible={userTypeAlertVisible}
-        title="Alerta"
-        message="Usuário não é do tipo 'Operador'."
-        onClose={() => setUserTypeAlertVisible(false)}
-    />
+        <TouchableOpacity 
+            style={styles.button}
+            onPress={handleSubmit(loginFirebase)}
+        >
+            <Text style={styles.buttonText}>Entrar</Text>
+        </TouchableOpacity>
 
     </View>
 )
@@ -143,24 +135,30 @@ return (
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        backgroundColor: "#E2F4FF"
+        backgroundColor: '#4A5B48',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     containerEmail: {
-        borderRadius: 5,
+        borderRadius: 40,
         height: 50,
         marginBottom: 4,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor:'#0E5CB5',
-        width:'100%'
+        backgroundColor:'#889B87',
+        width:'90%',
+        marginTop: 70
     },
     inputEmail:{
-        width: '85%',
-        height: 50,
-        padding: 8,
-        fontSize: 18,
-        borderRadius: 5,
+        width: '80%',
+        backgroundColor: '#889B87',
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderRadius: 40,
         color: '#fff',
+        height: 48,
+        fontSize:17,
+        marginLeft: 10
     },
     iconMail:{
         paddingStart: 15,
@@ -170,21 +168,24 @@ const styles = StyleSheet.create({
     },
     containerSenha: {
         flexDirection:'row',
-        width: '100%',
-        backgroundColor:'#0E5CB5',
-        borderRadius: 5,
+        width: '90%',
+        backgroundColor:'#889B87',
+        borderRadius: 40,
         height: 50,
         alignItems:'center',
         marginBottom: 4,
         marginTop: 12
     },
     inputSenha:{
-        width: '85%',
-        height: 50,
-        padding: 8,
-        fontSize: 18,
-        borderRadius: 5,
+        width: '80%',
+        backgroundColor: '#889B87',
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderRadius: 40,
         color: '#fff',
+        height: 48,
+        fontSize:17,
+        marginLeft: 10
     },
     iconEye: {
         padding: 8,
@@ -196,23 +197,33 @@ const styles = StyleSheet.create({
     labelError:{
         alignSelf: 'flex-start',
         color:'#ff375b',
-        marginBottom: 8
+        marginBottom: 8,
+        marginLeft: 30
     },
     button:{
-        backgroundColor: '#0E5CB5',
-        width: '100%',
-        height: 45,
-        borderRadius: 5,
-        paddingVertical: 8,
-        marginTop: 14,
-        justifyContent: 'center',
-        alignItems: 'center'
+        backgroundColor: '#4A5B48',
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 40,
+        borderColor: '#D8AE5E',
+        borderWidth:2,
+        alignItems: "center",
+        justifyContent:"center",
+        marginTop:12,
+        width: '90%'
     },
-    buttonText:{
-        color: '#FFF',
+    buttonText: {
         fontSize: 18,
-        fontWeight: 'bold'
-    }
+        color: '#D8AE5E',
+        fontWeight: 'bold',
+    },
+    Text: {
+        textAlign: 'center',
+        fontFamily: 'Brice-RegularSemiExpanded',
+        fontSize: 23,
+        color: '#D8AE5E',
+    },
+
 });
 
 
