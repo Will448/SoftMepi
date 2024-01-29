@@ -5,6 +5,7 @@ import LoginPrincipal from '../view/LoginPrincipal';
 import DashboardLider from '../view/lider/DashboardLider';
 import DashboardOper from '../view/oper/DashboardOper';
 import DashboardSup from '../view/sup/DashboardSup';
+import CadastroOper from '../view/lider/CadastroOper';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,12 @@ export default function Routes(){
             <Stack.Screen
                 name='DashboardSup'
                 component={DashboardSup}
+                options={{headerShown: false}}
+            />
+
+            <Stack.Screen
+                name='CadastroOper'
+                component={CadastroOper}
                 options={{headerShown: false}}
             />
         </Stack.Navigator>
